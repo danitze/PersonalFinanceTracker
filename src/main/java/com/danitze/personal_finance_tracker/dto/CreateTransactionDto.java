@@ -37,4 +37,12 @@ public class CreateTransactionDto {
     public boolean isNonZero() {
         return amount != null && amount.compareTo(BigDecimal.ZERO) != 0;
     }
+
+    @AssertTrue(message = "Amount sign should be correct for your category")
+    public boolean checkAmountSign() {
+        return switch (type) {
+            case INCOME -> amount.signum() == 1;
+            case EXPENSE -> amount.signum() == -1;
+        };
+    }
 }

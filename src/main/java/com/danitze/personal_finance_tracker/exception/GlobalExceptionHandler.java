@@ -64,4 +64,16 @@ public class GlobalExceptionHandler {
         return errors;
     }
 
+    @ExceptionHandler(BudgetLimitAlreadyUsedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, String> handleBudgetLimitAlreadyUsedException(BudgetLimitAlreadyUsedException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler(BudgetLimitNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleBudgetLimitNotFoundException(BudgetLimitNotFoundException e) {
+        return Map.of("error", e.getMessage());
+    }
+
 }

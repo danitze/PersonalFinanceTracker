@@ -9,7 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 
 @Entity
-@Table(name = "refresh_tokens")
+@Table(
+        name = "refresh_tokens",
+        indexes = {
+                @Index(name = "idx_refresh_token", columnList = "token")
+        }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

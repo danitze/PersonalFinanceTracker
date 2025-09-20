@@ -1,22 +1,25 @@
 package com.danitze.personal_finance_tracker.service;
 
-import com.danitze.personal_finance_tracker.dto.CreateTransactionDto;
-import com.danitze.personal_finance_tracker.dto.TransactionDto;
-import com.danitze.personal_finance_tracker.dto.TransactionMapper;
+import com.danitze.personal_finance_tracker.dto.*;
 import com.danitze.personal_finance_tracker.entity.Account;
 import com.danitze.personal_finance_tracker.entity.Transaction;
+import com.danitze.personal_finance_tracker.entity.enums.TransactionCategory;
+import com.danitze.personal_finance_tracker.entity.enums.TransactionType;
 import com.danitze.personal_finance_tracker.exception.AccountNotFoundException;
 import com.danitze.personal_finance_tracker.exception.TransactionNotFoundException;
 import com.danitze.personal_finance_tracker.repository.AccountRepository;
 import com.danitze.personal_finance_tracker.repository.TransactionRepository;
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class TransactionService {
@@ -91,6 +94,34 @@ public class TransactionService {
                 to,
                 pageable
         ).map(transactionMapper::toDto);
+    }
+
+    public List<TransactionCategorySummaryDto> getCategoriesSummaries(
+            Long accountId,
+            OffsetDateTime from,
+            OffsetDateTime to
+    ) {
+        if (to.isBefore(from)) {
+            throw new IllegalArgumentException("from must be before to");
+        }
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+        return transactionRepository.findCategoriesSummaries(account, from, to);
+    }
+
+    public TransactionsSummaryDto getTransactionsSummary(
+            Long accountId,
+            OffsetDateTime from,
+            OffsetDateTime to,
+            @Nullable Set<TransactionType> transactionTypes,
+            @Nullable Set<TransactionCategory> transactionCategories
+    ) {
+        if (to.isBefore(from)) {
+            throw new IllegalArgumentException("from must be before to");
+        }
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
+        return transactionRepository.getTransactionsSummary(account, from, to, transactionTypes, transactionCategories);
     }
 
     public boolean isOwner(Long transactionId, String email) {

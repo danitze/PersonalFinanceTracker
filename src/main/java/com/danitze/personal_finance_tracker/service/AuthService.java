@@ -9,6 +9,7 @@ import com.danitze.personal_finance_tracker.exception.*;
 import com.danitze.personal_finance_tracker.repository.RefreshTokenRepository;
 import com.danitze.personal_finance_tracker.repository.UserRepository;
 import com.danitze.personal_finance_tracker.repository.UserRoleRepository;
+import com.danitze.personal_finance_tracker.security.HashUtil;
 import com.danitze.personal_finance_tracker.security.JwtUtil;
 import com.danitze.personal_finance_tracker.security.SecurityUser;
 import jakarta.transaction.Transactional;
@@ -30,6 +31,7 @@ public class AuthService {
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final HashUtil hashUtil;
 
     @Autowired
     public AuthService(
@@ -37,13 +39,15 @@ public class AuthService {
             RefreshTokenRepository refreshTokenRepository,
             UserRoleRepository userRoleRepository,
             PasswordEncoder passwordEncoder,
-            JwtUtil jwtUtil
+            JwtUtil jwtUtil,
+            HashUtil hashUtil
     ) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.userRoleRepository = userRoleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.hashUtil = hashUtil;
     }
 
     public void signUp(SignUpDto signUpDto) {
@@ -74,19 +78,20 @@ public class AuthService {
         String refreshTokenJwt = jwtUtil.generateRefreshToken(userDetails);
         RefreshToken refreshToken = RefreshToken.builder()
                 .user(user)
-                .token(refreshTokenJwt)
+                .token(hashUtil.hashSha256(refreshTokenJwt))
                 .expirationDate(
                         jwtUtil.getExpirationDate(refreshTokenJwt)
                                 .toInstant().atOffset(ZoneOffset.UTC)
                 )
                 .build();
-        refreshToken = refreshTokenRepository.save(refreshToken);
-        return new TokenDto(token, refreshToken.getToken());
+        refreshTokenRepository.save(refreshToken);
+        return new TokenDto(token, refreshTokenJwt);
     }
 
     @Transactional
     public TokenDto refreshAccessToken(RefreshAccessTokenDto refreshAccessTokenDto) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(refreshAccessTokenDto.getRefreshToken())
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByToken(hashUtil.hashSha256(refreshAccessTokenDto.getRefreshToken()))
                 .orElseThrow(RefreshTokenNotFoundException::new);
         OffsetDateTime now = OffsetDateTime.now(ZoneOffset.UTC);
         if (now.isAfter(refreshToken.getExpirationDate())) {
@@ -96,7 +101,7 @@ public class AuthService {
 
         User user = refreshToken.getUser();
         UserDetails userDetails = new SecurityUser(user);
-        if (!jwtUtil.validateToken(refreshToken.getToken(), userDetails)) {
+        if (!jwtUtil.validateToken(refreshAccessTokenDto.getRefreshToken(), userDetails)) {
             throw new BadCredentialsException("Invalid token");
         }
 
@@ -104,20 +109,21 @@ public class AuthService {
         String refreshTokenJwt = jwtUtil.generateRefreshToken(userDetails);
         refreshToken = RefreshToken.builder()
                 .user(user)
-                .token(refreshTokenJwt)
+                .token(hashUtil.hashSha256(refreshTokenJwt))
                 .expirationDate(
                         jwtUtil.getExpirationDate(refreshTokenJwt)
                                 .toInstant().atOffset(ZoneOffset.UTC)
                 )
                 .build();
-        refreshToken = refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(refreshToken);
         String token = jwtUtil.generateToken(userDetails);
-        return new TokenDto(token, refreshToken.getToken());
+        return new TokenDto(token, refreshTokenJwt);
     }
 
     @Transactional
     public void logout(LogOutDto logOutDto) {
-        RefreshToken refreshToken = refreshTokenRepository.findByToken(logOutDto.getRefreshToken())
+        RefreshToken refreshToken = refreshTokenRepository
+                .findByToken(hashUtil.hashSha256(logOutDto.getRefreshToken()))
                 .orElseThrow(RefreshTokenNotFoundException::new);
         refreshTokenRepository.delete(refreshToken);
     }
