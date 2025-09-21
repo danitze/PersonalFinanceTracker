@@ -1,11 +1,21 @@
 package com.danitze.personal_finance_tracker.controller;
 
-import com.danitze.personal_finance_tracker.dto.*;
+import com.danitze.personal_finance_tracker.dto.account.AccountDto;
+import com.danitze.personal_finance_tracker.dto.account.UpdateAccountDto;
+import com.danitze.personal_finance_tracker.dto.budget.BudgetLimitDto;
+import com.danitze.personal_finance_tracker.dto.budget.CreateBudgetLimitDto;
+import com.danitze.personal_finance_tracker.dto.notification.CreateNotificationDto;
+import com.danitze.personal_finance_tracker.dto.notification.NotificationDto;
+import com.danitze.personal_finance_tracker.dto.transaction.CreateTransactionDto;
+import com.danitze.personal_finance_tracker.dto.transaction.TransactionCategorySummaryDto;
+import com.danitze.personal_finance_tracker.dto.transaction.TransactionDto;
+import com.danitze.personal_finance_tracker.dto.transaction.TransactionsSummaryDto;
 import com.danitze.personal_finance_tracker.entity.enums.TransactionCategory;
 import com.danitze.personal_finance_tracker.entity.enums.TransactionType;
-import com.danitze.personal_finance_tracker.service.AccountService;
-import com.danitze.personal_finance_tracker.service.BudgetLimitService;
-import com.danitze.personal_finance_tracker.service.TransactionService;
+import com.danitze.personal_finance_tracker.service.account.AccountService;
+import com.danitze.personal_finance_tracker.service.budget.BudgetLimitService;
+import com.danitze.personal_finance_tracker.service.notification.NotificationService;
+import com.danitze.personal_finance_tracker.service.transaction.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,17 +40,20 @@ public class AccountController {
     private final AccountService accountService;
     private final TransactionService transactionService;
     private final BudgetLimitService budgetLimitService;
+    private final NotificationService notificationService;
 
 
     @Autowired
     public AccountController(
             AccountService accountService,
             TransactionService transactionService,
-            BudgetLimitService budgetLimitService
+            BudgetLimitService budgetLimitService,
+            NotificationService notificationService
     ) {
         this.accountService = accountService;
         this.transactionService = transactionService;
         this.budgetLimitService = budgetLimitService;
+        this.notificationService = notificationService;
     }
 
     @GetMapping("/{id}")
@@ -148,5 +161,36 @@ public class AccountController {
             @PathVariable Long id
     ) {
         return ResponseEntity.ok(budgetLimitService.getBudgetLimits(id));
+    }
+
+    @PostMapping("/{id}/notifications")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<NotificationDto> createNotification(
+            @PathVariable Long id,
+            @Valid @RequestBody CreateNotificationDto createNotificationDto
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(notificationService.createNotification(id, createNotificationDto));
+    }
+
+    @GetMapping("/{id}/notifications")
+    @PreAuthorize("hasRole('ADMIN') or @accountService.isOwner(#id, principal.username)")
+    public ResponseEntity<Page<NotificationDto>> getNotifications(
+            @PathVariable Long id,
+            @RequestParam(value = "limit", defaultValue = "30") int limit,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "not_read_only", defaultValue = "false") boolean notReadOnly
+    ) {
+        Pageable pageable = PageRequest.of(page, limit);
+        return ResponseEntity.ok(notificationService.getNotifications(id, notReadOnly, pageable));
+    }
+
+    @GetMapping("/{id}/notifications/unread")
+    @PreAuthorize("hasRole('ADMIN') or @accountService.isOwner(#id, principal.username)")
+    public ResponseEntity<List<NotificationDto>> getAllUnreadNotifications(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(notificationService.getAllUnreadNotifications(id));
     }
 }

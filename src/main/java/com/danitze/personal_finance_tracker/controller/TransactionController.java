@@ -1,7 +1,7 @@
 package com.danitze.personal_finance_tracker.controller;
 
-import com.danitze.personal_finance_tracker.dto.TransactionDto;
-import com.danitze.personal_finance_tracker.service.TransactionService;
+import com.danitze.personal_finance_tracker.dto.transaction.TransactionDto;
+import com.danitze.personal_finance_tracker.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

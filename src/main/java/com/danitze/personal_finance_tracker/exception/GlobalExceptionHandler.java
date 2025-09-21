@@ -1,5 +1,15 @@
 package com.danitze.personal_finance_tracker.exception;
 
+import com.danitze.personal_finance_tracker.exception.account.AccountNotFoundException;
+import com.danitze.personal_finance_tracker.exception.auth.EmailAlreadyUsedException;
+import com.danitze.personal_finance_tracker.exception.auth.RefreshTokenExpiredException;
+import com.danitze.personal_finance_tracker.exception.auth.RefreshTokenNotFoundException;
+import com.danitze.personal_finance_tracker.exception.budget.BudgetLimitAlreadyUsedException;
+import com.danitze.personal_finance_tracker.exception.budget.BudgetLimitNotFoundException;
+import com.danitze.personal_finance_tracker.exception.notification.NotificationNotFoundException;
+import com.danitze.personal_finance_tracker.exception.transaction.TransactionNotFoundException;
+import com.danitze.personal_finance_tracker.exception.user.UserNotFoundException;
+import com.danitze.personal_finance_tracker.exception.user.UserRoleNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -73,6 +83,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BudgetLimitNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleBudgetLimitNotFoundException(BudgetLimitNotFoundException e) {
+        return Map.of("error", e.getMessage());
+    }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Map<String, String> handleNotificationNotFoundException(NotificationNotFoundException e) {
         return Map.of("error", e.getMessage());
     }
 

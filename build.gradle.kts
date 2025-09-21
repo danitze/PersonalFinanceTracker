@@ -42,6 +42,10 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5") // for JSON serialization/deserialization
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.mapstruct:mapstruct:1.6.3")
+    annotationProcessor("org.mapstruct:mapstruct-processor:1.6.3")
+    implementation("io.mailtrap:mailtrap-java:1.0.0")
+    implementation("org.springframework.kafka:spring-kafka")
 }
 
 tasks.withType<Test> {

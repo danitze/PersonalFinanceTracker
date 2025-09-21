@@ -1,8 +1,8 @@
 package com.danitze.personal_finance_tracker.controller;
 
-import com.danitze.personal_finance_tracker.dto.BudgetLimitDto;
-import com.danitze.personal_finance_tracker.dto.UpdateBudgetLimitDto;
-import com.danitze.personal_finance_tracker.service.BudgetLimitService;
+import com.danitze.personal_finance_tracker.dto.budget.BudgetLimitDto;
+import com.danitze.personal_finance_tracker.dto.budget.UpdateBudgetLimitDto;
+import com.danitze.personal_finance_tracker.service.budget.BudgetLimitService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

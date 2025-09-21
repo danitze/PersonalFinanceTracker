@@ -1,7 +1,7 @@
 package com.danitze.personal_finance_tracker.repository;
 
-import com.danitze.personal_finance_tracker.dto.TransactionCategorySummaryDto;
-import com.danitze.personal_finance_tracker.dto.TransactionsSummaryDto;
+import com.danitze.personal_finance_tracker.dto.transaction.TransactionCategorySummaryDto;
+import com.danitze.personal_finance_tracker.dto.transaction.TransactionsSummaryDto;
 import com.danitze.personal_finance_tracker.entity.Account;
 import com.danitze.personal_finance_tracker.entity.Transaction;
 import com.danitze.personal_finance_tracker.entity.enums.TransactionCategory;

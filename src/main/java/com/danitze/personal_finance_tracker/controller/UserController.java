@@ -1,8 +1,12 @@
 package com.danitze.personal_finance_tracker.controller;
 
-import com.danitze.personal_finance_tracker.dto.*;
-import com.danitze.personal_finance_tracker.service.AccountService;
-import com.danitze.personal_finance_tracker.service.UserService;
+import com.danitze.personal_finance_tracker.dto.account.AccountDto;
+import com.danitze.personal_finance_tracker.dto.account.CreateAccountDto;
+import com.danitze.personal_finance_tracker.dto.user.CreateUserDto;
+import com.danitze.personal_finance_tracker.dto.user.UpdateUserDto;
+import com.danitze.personal_finance_tracker.dto.user.UserDto;
+import com.danitze.personal_finance_tracker.service.account.AccountService;
+import com.danitze.personal_finance_tracker.service.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
