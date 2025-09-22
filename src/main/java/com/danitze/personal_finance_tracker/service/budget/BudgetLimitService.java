@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BudgetLimitService {
@@ -66,7 +65,7 @@ public class BudgetLimitService {
     ) {
         return getBudgetLimitsEntities(accountId).stream()
                 .map(budgetLimitMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public BudgetLimitDto updateBudgetLimit(

@@ -30,7 +30,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     );
 
     @Query("""
-            SELECT new com.danitze.personal_finance_tracker.dto.TransactionCategorySummaryDto(t.category, SUM(t.amount))
+            SELECT new com.danitze.personal_finance_tracker.dto.transaction.TransactionCategorySummaryDto(t.category, SUM(t.amount))
             FROM Transaction t
             WHERE t.account = :account
             AND t.txDate BETWEEN :from AND :to
@@ -43,7 +43,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
     );
 
     @Query("""
-            SELECT new com.danitze.personal_finance_tracker.dto.TransactionsSummaryDto(
+            SELECT new com.danitze.personal_finance_tracker.dto.transaction.TransactionsSummaryDto(
                         SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END),
                         SUM(CASE WHEN t.amount < 0 THEN t.amount ELSE 0 END)
             )

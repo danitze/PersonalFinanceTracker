@@ -16,7 +16,11 @@ public class KafkaNotificationConsumer {
         this.notificationService = notificationService;
     }
 
-    @KafkaListener(topics = "${kafka.topic.notifications}", groupId = "notifications-service")
+    @KafkaListener(
+            topics = "${kafka.topic.notifications}",
+            groupId = "notifications-service",
+            containerFactory = "createNotificationListenerContainerFactory"
+    )
     public void listen(CreateNotificationMessageDto createNotificationMessageDto) {
         Notification notification = notificationService.createNotificationEntity(
                 createNotificationMessageDto.getAccountId(),

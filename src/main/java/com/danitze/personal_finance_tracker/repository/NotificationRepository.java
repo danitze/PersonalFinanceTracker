@@ -41,4 +41,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
             @Param("now") OffsetDateTime now
     );
 
+    List<Notification> findAllByStatus(NotificationStatus status);
+
 }

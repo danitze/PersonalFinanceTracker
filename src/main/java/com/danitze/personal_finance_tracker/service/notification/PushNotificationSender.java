@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 
-@Service
+@Service("pushNotificationSender")
 public class PushNotificationSender implements NotificationSender {
 
     private final NotificationRepository notificationRepository;

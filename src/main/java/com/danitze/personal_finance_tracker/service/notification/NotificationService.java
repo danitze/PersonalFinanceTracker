@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class NotificationService {
@@ -26,16 +25,16 @@ public class NotificationService {
 
     private final NotificationMapper notificationMapper;
 
-    private final EmailNotificationSender emailNotificationSender;
-    private final PushNotificationSender pushNotificationSender;
+    private final NotificationSender emailNotificationSender;
+    private final NotificationSender pushNotificationSender;
 
     @Autowired
     public NotificationService(
             NotificationRepository notificationRepository,
             AccountRepository accountRepository,
             NotificationMapper notificationMapper,
-            EmailNotificationSender emailNotificationSender,
-            PushNotificationSender pushNotificationSender
+            NotificationSender emailNotificationSender,
+            NotificationSender pushNotificationSender
     ) {
         this.notificationRepository = notificationRepository;
         this.accountRepository = accountRepository;
@@ -101,7 +100,7 @@ public class NotificationService {
         return notificationRepository.findAllByAccountAndReadFalse(account)
                 .stream()
                 .map(notificationMapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public boolean isOwner(Long notificationId, String email) {

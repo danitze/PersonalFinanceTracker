@@ -1,5 +1,6 @@
 package com.danitze.personal_finance_tracker.service.notification;
 
+import com.danitze.personal_finance_tracker.constants.NotificationConstants;
 import com.danitze.personal_finance_tracker.entity.Notification;
 import com.danitze.personal_finance_tracker.entity.enums.NotificationStatus;
 import com.danitze.personal_finance_tracker.repository.NotificationRepository;
@@ -35,10 +36,14 @@ public class ScheduledNotificationSender {
         OffsetDateTime now = OffsetDateTime.now();
         List<Notification> notifications = notificationRepository
                 .findAllPending(
-                        Set.of(NotificationStatus.NOT_SENT, NotificationStatus.FAILED),
-
+                        Set.of(NotificationStatus.NOT_SENT),
                         now
-                );
+                )
+                .stream()
+                .filter(notification ->
+                        notification.getRetryCount() <= NotificationConstants.MAX_RETRY_COUNT
+                )
+                .toList();
         for (Notification notification : notifications) {
             try {
                 notificationService.sendNotification(notification);

@@ -70,4 +70,8 @@ public class Notification {
     @Column(name = "status", nullable = false)
     private NotificationStatus status = NotificationStatus.NOT_SENT;
 
+    @Builder.Default
+    @Column(name = "retry_count", nullable = false)
+    private Integer retryCount = 0;
+
 }

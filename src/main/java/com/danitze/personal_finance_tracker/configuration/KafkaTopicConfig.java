@@ -15,4 +15,9 @@ public class KafkaTopicConfig {
         return new NewTopic(notificationsTopic, 1, (short) 1);
     }
 
+    @Bean
+    public NewTopic notificationsDlq() {
+        return new NewTopic("notifications.DLQ", 1, (short) 1);
+    }
+
 }

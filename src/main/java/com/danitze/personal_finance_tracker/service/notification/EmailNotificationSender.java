@@ -1,5 +1,6 @@
 package com.danitze.personal_finance_tracker.service.notification;
 
+import com.danitze.personal_finance_tracker.constants.NotificationConstants;
 import com.danitze.personal_finance_tracker.entity.Notification;
 import com.danitze.personal_finance_tracker.entity.enums.NotificationChannel;
 import com.danitze.personal_finance_tracker.entity.enums.NotificationStatus;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Service
+@Service("emailNotificationSender")
 public class EmailNotificationSender implements NotificationSender {
 
     private final NotificationRepository notificationRepository;
@@ -62,8 +63,10 @@ public class EmailNotificationSender implements NotificationSender {
 
         } catch (Exception e) {
             LoggerFactory.getLogger(EmailNotificationSender.class).atWarn().log("Failed to send notification", e);
-            notification.setStatus(NotificationStatus.FAILED);
-            notificationRepository.save(notification);
+            if (notification.getRetryCount() >= NotificationConstants.MAX_RETRY_COUNT) {
+                notification.setStatus(NotificationStatus.FAILED);
+                notificationRepository.save(notification);
+            }
         }
     }
 }
